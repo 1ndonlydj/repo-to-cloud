@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Plus, X, GitBranch, Docker, Key, Settings } from "lucide-react";
+import { Plus, X, GitBranch, Dock, Key, Settings } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 export function DeploymentForm() {
@@ -227,7 +227,7 @@ export function DeploymentForm() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
-              <Docker className="h-5 w-5 text-blue-600" />
+              <Dock className="h-5 w-5 text-blue-600" />
               <span>Docker Build Arguments</span>
             </CardTitle>
             <CardDescription>

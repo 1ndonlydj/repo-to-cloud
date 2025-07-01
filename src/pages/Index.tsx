@@ -1,20 +1,18 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navigate } from "react-router-dom";
 import { GitBranch, Shield, Zap, Cloud, Users, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { GitHubAuth } from "@/components/GitHubAuth";
+import { apiService } from "@/services/api";
 
 const Index = () => {
-  // Simulate authentication state - replace with real auth later
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState<{ name: string; role: string } | null>(null);
+  const { initiateGitHubLogin } = GitHubAuth();
 
-  const handleGitHubLogin = () => {
-    // Simulate GitHub OAuth - replace with real implementation
-    setIsAuthenticated(true);
-    setUser({ name: "John Doe", role: "admin" });
-  };
+  useEffect(() => {
+    setIsAuthenticated(apiService.isAuthenticated());
+  }, []);
 
   if (isAuthenticated) {
     return <Navigate to="/dashboard" replace />;
@@ -35,7 +33,7 @@ const Index = () => {
               <span className="text-xl font-bold text-white">DeployHub</span>
             </div>
             <Button
-              onClick={handleGitHubLogin}
+              onClick={initiateGitHubLogin}
               className="bg-white text-slate-900 hover:bg-gray-100"
             >
               Sign in with GitHub
@@ -56,7 +54,7 @@ const Index = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
-                onClick={handleGitHubLogin}
+                onClick={initiateGitHubLogin}
                 size="lg"
                 className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-4 text-lg"
               >

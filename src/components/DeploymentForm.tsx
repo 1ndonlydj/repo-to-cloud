@@ -1,14 +1,12 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
 import { Plus, X, GitBranch, Dock, Key, Settings } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { apiService, DeploymentData, KeyValuePair } from "@/services/api";
 
 export function DeploymentForm() {
   const [formData, setFormData] = useState({
@@ -16,10 +14,12 @@ export function DeploymentForm() {
     dockerfilePath: "",
     appType: "",
     environment: "",
-    secrets: [] as Array<{ key: string; value: string }>,
-    envVars: [] as Array<{ key: string; value: string }>,
-    buildArgs: [] as Array<{ key: string; value: string }>,
+    secrets: [] as KeyValuePair[],
+    envVars: [] as KeyValuePair[],
+    buildArgs: [] as KeyValuePair[],
   });
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const addKeyValuePair = (type: "secrets" | "envVars" | "buildArgs") => {
     setFormData(prev => ({
@@ -42,13 +42,59 @@ export function DeploymentForm() {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Deployment Submitted",
-      description: "Your deployment job has been queued for processing.",
-    });
-    console.log("Deployment data:", formData);
+    
+    if (!formData.repoUrl || !formData.appType || !formData.environment) {
+      toast({
+        title: "Validation Error",
+        description: "Please fill in all required fields.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const deploymentData: DeploymentData = {
+        repo_url: formData.repoUrl,
+        dockerfile_path: formData.dockerfilePath || "./Dockerfile",
+        app_type: formData.appType as "nodejs" | "fastapi" | "php74" | "php82",
+        environment: formData.environment as "dev" | "staging" | "prod",
+        secrets: formData.secrets.filter(s => s.key && s.value),
+        env_vars: formData.envVars.filter(e => e.key && e.value),
+        build_args: formData.buildArgs.filter(b => b.key && b.value),
+      };
+
+      await apiService.createDeployment(deploymentData);
+      
+      toast({
+        title: "Deployment Submitted",
+        description: "Your deployment job has been queued for processing.",
+      });
+
+      // Reset form
+      setFormData({
+        repoUrl: "",
+        dockerfilePath: "",
+        appType: "",
+        environment: "",
+        secrets: [],
+        envVars: [],
+        buildArgs: [],
+      });
+
+    } catch (error) {
+      console.error("Deployment submission error:", error);
+      toast({
+        title: "Submission Failed",
+        description: "Failed to submit deployment. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -273,8 +319,12 @@ export function DeploymentForm() {
           <Button type="button" variant="outline">
             Save as Draft
           </Button>
-          <Button type="submit" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700">
-            Submit Deployment
+          <Button 
+            type="submit" 
+            className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Submitting..." : "Submit Deployment"}
           </Button>
         </div>
       </form>

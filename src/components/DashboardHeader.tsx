@@ -11,17 +11,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { apiService, User as UserType } from "@/services/api";
 
 interface DashboardHeaderProps {
-  user: {
-    name: string;
-    role: string;
-    email: string;
-  };
+  user: UserType;
 }
 
 export function DashboardHeader({ user }: DashboardHeaderProps) {
   const handleLogout = () => {
+    apiService.logout();
     window.location.href = "/";
   };
 

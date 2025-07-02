@@ -4,7 +4,7 @@ import { Navigate } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
 import { DashboardHeader } from "@/components/DashboardHeader";
-import { DeploymentForm } from "@/components/DeploymentForm";
+import { DeploymentForm } from "@/components/deployment/DeploymentForm";
 import { DeploymentHistory } from "@/components/DeploymentHistory";
 import { AdminPanel } from "@/components/AdminPanel";
 import { apiService, User } from "@/services/api";

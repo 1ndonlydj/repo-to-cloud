@@ -35,7 +35,7 @@ export function GitHubAuth() {
   };
 
   const initiateGitHubLogin = () => {
-    const clientId = 'your_github_client_id'; // Replace with your GitHub app client ID
+    const clientId = 'YOUR_ACTUAL_GITHUB_CLIENT_ID'; // Replace with your actual GitHub app client ID
     const redirectUri = `${window.location.origin}/auth/callback`;
     const scope = 'user:email';
     
